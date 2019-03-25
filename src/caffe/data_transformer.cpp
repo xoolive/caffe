@@ -713,7 +713,7 @@ void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
   const int num = transformed_blob->num();
 
   CHECK_GT(img_channels, 0);
-  CHECK(cv_img.depth() == CV_8U) << "Image data type must be unsigned byte";
+  //CHECK(cv_img.depth() == CV_8U) << "Image data type must be unsigned byte";
   CHECK_EQ(channels, img_channels);
   CHECK_GE(num, 1);
 

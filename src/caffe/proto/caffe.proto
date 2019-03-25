@@ -1302,6 +1302,9 @@ message HDF5DataParameter {
 
   // Whether data are images (and transforms can apply)
   optional bool image = 4 [default = false];
+
+  // should be true if we want to keep data as float when loading back to cvimg
+  optional bool float_data = 5 [default = true];
 }
 
 message HDF5OutputParameter {

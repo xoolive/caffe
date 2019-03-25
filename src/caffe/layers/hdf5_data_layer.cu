@@ -53,24 +53,28 @@ void HDF5DataLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
 	  int data_dim = top[j]->count() / top[j]->shape(0);
 	  if (j == 0) { // data, get image + apply transforms + copy to top blob
 	    vector<int> bshape = hdf_blobs_[j]->shape();
+        int channels = bshape[1];
 	    int height = bshape[2];
 	    int width = bshape[3];
 	    vector<Dtype> img_data;
 	    img_data.insert(img_data.begin(),&hdf_blobs_[j]->cpu_data()[data_permutation_[current_row_]*data_dim],
 	    		    &hdf_blobs_[j]->cpu_data()[data_permutation_[current_row_]*data_dim]+data_dim);
-            cv::Mat cv_img(height,width,CV_8UC3);
-	    for (int c=0;c<3;c++)
+        cv::Mat cv_img(height,width,float_data_?CV_32FC1:CV_8UC3);
+	    for (int c=0;c<channels;c++)
 	      {
 		for (int h=0;h<height;h++)
 		  {
 		    for (int w=0;w<width;w++)
 		      {
+        if (float_data_)
+			cv_img.at<cv::Vec<float, 1>>(cv::Point(w,h))[c] = (img_data.at(c*width*height+h*width+w));
+        else
 			cv_img.at<cv::Vec3b>(cv::Point(w,h))[c] = static_cast<uint8_t>(img_data.at(c*width*height+h*width+w));
 		      }
 		  }
 	      }
 	    Blob<Dtype> transformed_data;
-	    transformed_data.Reshape(1,3,height,width);
+	    transformed_data.Reshape(1,channels,height,width);
 	    this->data_transformer_->Transform(cv_img, &transformed_data);
 	    caffe_copy(data_dim, transformed_data.mutable_cpu_data(), &top[j]->mutable_gpu_data()[i * data_dim]);
 	  }
