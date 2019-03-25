@@ -57,6 +57,7 @@ class HDF5DataLayer : public Layer<Dtype> {
   std::vector<unsigned int> file_permutation_;
   shared_ptr<DataTransformer<Dtype> > data_transformer_;
   TransformationParameter transform_param_;
+  bool float_data_;
 };
 
 }  // namespace caffe
